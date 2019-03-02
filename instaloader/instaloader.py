@@ -784,7 +784,8 @@ class Instaloader:
     def download_hashtag(self, hashtag: str,
                          max_count: Optional[int] = None,
                          post_filter: Optional[Callable[[Post], bool]] = None,
-                         fast_update: bool = False) -> None:
+                         fast_update: bool = False,
+                         target: Optional[str] = None) -> None:
         """Download pictures of one hashtag.
 
         To download the last 30 pictures with hashtag #cat, do::
@@ -798,6 +799,8 @@ class Instaloader:
         :param fast_update: If true, abort when first already-downloaded picture is encountered
         """
         hashtag = hashtag.lower()
+        if target is None:
+            target = '#' + hashtag
         self.context.log("Retrieving pictures with hashtag {}...".format(hashtag))
         count = 1
         for post in self.get_hashtag_posts(hashtag):
@@ -809,7 +812,7 @@ class Instaloader:
                 continue
             count += 1
             with self.context.error_catcher('Download hashtag #{}'.format(hashtag)):
-                downloaded = self.download_post(post, target='#' + hashtag)
+                downloaded = self.download_post(post, target=target)
                 if fast_update and not downloaded:
                     break
 
